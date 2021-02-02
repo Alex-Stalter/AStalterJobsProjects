@@ -1,5 +1,2 @@
-def main():
-    print("Hello World")
+import requests
 
-
-main()
