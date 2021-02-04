@@ -2,7 +2,7 @@ import requests
 import secrets
 
 
-def get_data(url:str):
+def get_data(url: str):
     all_data = []
     full_url = f"{url}&api_key={secrets.api_key}"
     response = requests.get(full_url)
