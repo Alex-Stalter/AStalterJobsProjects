@@ -4,10 +4,11 @@
 
 ## Requirements for running.
 
-Please Follow the following Steps.
+Please do the following.
 
 - In order to run this project you must obtain an api key. You can find the api key registration [here](https://api.data.gov/signup/).
 - Make sure to have Python 3.8.7 installed.
+- The git does not include a virtual environment so make sure to create your own using pycharm.   
 - Make sure to include the Requests and Os libraries.
 - Create a secrets.py in order to hide the api key. Do not hardcode into URL.
 
