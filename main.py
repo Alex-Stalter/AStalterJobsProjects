@@ -37,6 +37,7 @@ def write_to_file(data):
         results_file.write("\n")
     results_file.close()
 
+
 def main():
     url = "https://api.data.gov/ed/collegescorecard/v1/schools.json?school.degrees_awarded.predominant=2,3&" \
           "fields=id,school.state,school.name,2018.student.size,2017.student.size," \
