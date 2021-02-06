@@ -1,3 +1,5 @@
+# Author: Alex Stalter
+
 import requests
 import secrets
 import os
@@ -13,7 +15,7 @@ def get_data(url: str):
     per_page = metadata['per_page']
     pages = round(total_data/per_page)
 
-    for x in range(pages):
+    for x in range(pages+1):
         response = requests.get(full_url)
         if response.status_code != 200:
             print(response.text)
@@ -33,7 +35,7 @@ def write_to_file(data):
     for x in data:
         results_file.write(str(x))
         results_file.write("\n")
-
+    results_file.close()
 
 def main():
     url = "https://api.data.gov/ed/collegescorecard/v1/schools.json?school.degrees_awarded.predominant=2,3&" \
