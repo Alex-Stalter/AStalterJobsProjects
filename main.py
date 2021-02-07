@@ -47,8 +47,8 @@ def get_data(url: str):
         all_data.extend(results)
         full_url = f"{url}&api_key={secrets.api_key}&page={x+1}"
 
-    write_to_file(all_data)
-    # write_to_file(clean_data(all_data))
+    write_to_file(all_data, "raw_results.txt")
+    write_to_file(clean_data(all_data), "clean_results.txt")
 
 
 def clean_data(unclean_data):
@@ -62,17 +62,17 @@ def clean_data(unclean_data):
         b_size = x['2018.student.size']
         earnings = x['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
         repayment = x['2016.repayment.3_yr_repayment.overall']
-        cleaned_data.extend(f"school.name{name},school.state:{state},id:{school_id},2017.size:{a_size},"
-                            f"2018.size:{b_size},earning:{earnings},repayment:{repayment}")
+        cleaned_data.append((f"school.name:{name},school.state:{state},id:{school_id},2017.size:{a_size},"
+                            f"2018.size:{b_size},earning:{earnings},repayment:{repayment}"))
 
     return cleaned_data
 
 
-def write_to_file(data):
+def write_to_file(data, file: str):
 
-    if os.path.exists("results.txt"):
-        os.remove("results.txt")
-    results_file = open("results.txt", 'x')
+    if os.path.exists(file):
+        os.remove(file)
+    results_file = open(file, 'x')
     for x in data:
         results_file.write(str(x))
         results_file.write("\n")
