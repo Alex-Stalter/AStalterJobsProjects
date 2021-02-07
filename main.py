@@ -4,8 +4,7 @@ import requests
 import secrets
 import os
 
-# get_data takes the inputted URL and adds the api_key from secrets.py to the end of the url.
-# the function then loops through all of the pages given the information from the metadata.
+# format_url() uses a hardcoded url and adds the queries to it so that it is easier to manage and to read.
 
 
 def format_url():
@@ -21,6 +20,8 @@ def format_url():
     url += "&sort=" + sort
 
     return url
+# get_data takes the inputted URL and adds the api_key from secrets.py to the end of the url.
+# the function then loops through all of the pages given the information from the metadata.
 
 
 def get_data(url: str):
@@ -49,10 +50,10 @@ def get_data(url: str):
 
     write_to_file(all_data, "raw_results.txt")
     write_to_file(clean_data(all_data), "clean_results.txt")
+# clean_data() takes in the raw data taken from the results and formats it to be more readable.
 
 
 def clean_data(unclean_data):
-    # TODO: Clean up results so that the file does not include unneeded things. Such as brackets and extra long labels.
     cleaned_data = []
     for x in unclean_data:
         name = x['school.name']
@@ -66,6 +67,7 @@ def clean_data(unclean_data):
                             f"2018.size:{b_size},earning:{earnings},repayment:{repayment}"))
 
     return cleaned_data
+# write_to_file() takes in data and a file in the form of a string in order to create a file to write the data to.
 
 
 def write_to_file(data, file: str):
@@ -77,11 +79,10 @@ def write_to_file(data, file: str):
         results_file.write(str(x))
         results_file.write("\n")
     results_file.close()
+# main() starts the program.
 
 
 def main():
-    # The URL query gets all of the minimum required data and sorts by earnings.
-
     get_data(format_url())
 
 
