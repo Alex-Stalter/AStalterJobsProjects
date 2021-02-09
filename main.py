@@ -24,6 +24,7 @@ def format_url():
 # the function then loops through all of the pages given the information from the metadata.
 # looks good demo comment for checking actions
 
+
 def get_data(url: str):
     # TODO: general clean up to make code more readable.
     all_data = []
