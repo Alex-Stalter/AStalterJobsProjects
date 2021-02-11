@@ -90,7 +90,7 @@ def insert_data(unclean_data, cursor: sqlite3.Cursor):
         b_size = x['2018.student.size']
         earnings = x['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
         repayment = x['2016.repayment.3_yr_repayment.overall']
-        cursor.execute('''INSERT INTO SCHOOL (id, name, state, first_size, second_size, earnings, repayment) 
+        cursor.execute('''INSERT INTO SCHOOL (id, name, state, first_size, second_size, earnings, repayment)
         VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, a_size, b_size, earnings, repayment))
 
 # write_to_file() takes in data and a file in the form of a string in order to create a file to write the data to.
