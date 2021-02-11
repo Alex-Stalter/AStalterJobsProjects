@@ -2,7 +2,21 @@
 
 import requests
 import secrets
-import os
+# import os
+import sqlite3
+from typing import Tuple
+
+
+def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
+    db_connection = sqlite3.connect(filename)
+    cursor = db_connection.cursor()
+    return db_connection, cursor
+
+
+def close_db(connection: sqlite3.Connection):
+    connection.commit()
+    connection.close()
+
 
 # format_url() uses a hardcoded url and adds the queries to it so that it is easier to manage and to read.
 
@@ -48,14 +62,26 @@ def get_data(url: str):
         results = json_data['results']
         all_data.extend(results)
         full_url = f"{url}&api_key={secrets.api_key}&page={x+1}"
+    return all_data
+    # write_to_file(all_data, "raw_results.txt")
+    # write_to_file(clean_data(all_data), "clean_results.txt")
 
-    write_to_file(all_data, "raw_results.txt")
-    write_to_file(clean_data(all_data), "clean_results.txt")
+
+def setup_db(cursor: sqlite3.Cursor):
+    cursor.execute('''CREATE TABLE if NOT EXISTS school(
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    state TEXT,
+    first_size INTEGER,
+    second_size INTEGER,
+    earnings INTEGER,
+    repayment INTEGER);''')
+
 # clean_data() takes in the raw data taken from the results and formats it to be more readable.
 
 
-def clean_data(unclean_data):
-    cleaned_data = []
+def insert_data(unclean_data, cursor: sqlite3.Cursor):
+
     for x in unclean_data:
         name = x['school.name']
         state = x['school.state']
@@ -64,27 +90,30 @@ def clean_data(unclean_data):
         b_size = x['2018.student.size']
         earnings = x['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
         repayment = x['2016.repayment.3_yr_repayment.overall']
-        cleaned_data.append((f"school.name:{name},school.state:{state},id:{school_id},2017.size:{a_size},"
-                            f"2018.size:{b_size},earning:{earnings},repayment:{repayment}"))
+        cursor.execute(f'''INSERT INTO SCHOOL (id, name, state, first_size, second_size, earnings, repayment) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, a_size, b_size, earnings, repayment))
 
-    return cleaned_data
 # write_to_file() takes in data and a file in the form of a string in order to create a file to write the data to.
 
 
-def write_to_file(data, file: str):
+# def write_to_file(data, file: str):
 
-    if os.path.exists(file):
-        os.remove(file)
-    results_file = open(file, 'x')
-    for x in data:
-        results_file.write(str(x))
-        results_file.write("\n")
-    results_file.close()
+    # if os.path.exists(file):
+    #   os.remove(file)
+    # results_file = open(file, 'x')
+    # for x in data:
+    #   results_file.write(str(x))
+    #   results_file.write("\n")
+    #   results_file.close()
 # main() starts the program.
 
 
 def main():
-    get_data(format_url())
+    all_data = get_data(format_url())
+    conn, cursor = open_db("jobs_db.sqlite")
+    setup_db(cursor)
+    insert_data(all_data, cursor)
+    close_db(conn)
 
 
 if __name__ == '__main__':
