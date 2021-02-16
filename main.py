@@ -5,12 +5,15 @@ import secrets
 # import os
 import sqlite3
 from typing import Tuple
+# open_db() creates a database based on the name that is inputted and then returns the cursor and connection so that
+# the data can be accessed and edited through python code.
 
 
 def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
     db_connection = sqlite3.connect(filename)
     cursor = db_connection.cursor()
     return db_connection, cursor
+# closes and commits changes to the database using the connection created by the open_db() function.
 
 
 def close_db(connection: sqlite3.Connection):
@@ -65,15 +68,18 @@ def get_data(url: str):
     return all_data
     # write_to_file(all_data, "raw_results.txt")
     # write_to_file(clean_data(all_data), "clean_results.txt")
+# Drops the table school so that no conflicts are created and a clean table can be worked in.
+# Once table has been dropped teh school table is created and all the columns created.
 
 
 def setup_db(cursor: sqlite3.Cursor):
+    cursor.execute('''DROP TABLE school;''')
     cursor.execute('''CREATE TABLE if NOT EXISTS school(
     id INTEGER PRIMARY KEY,
     name TEXT,
     state TEXT,
-    first_size INTEGER,
-    second_size INTEGER,
+    size_2017 INTEGER,
+    size_2018 INTEGER,
     earnings INTEGER,
     repayment INTEGER);''')
 
@@ -86,12 +92,12 @@ def insert_data(unclean_data, cursor: sqlite3.Cursor):
         name = x['school.name']
         state = x['school.state']
         school_id = x['id']
-        a_size = x['2017.student.size']
-        b_size = x['2018.student.size']
+        size_2017 = x['2017.student.size']
+        size_2018 = x['2018.student.size']
         earnings = x['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
         repayment = x['2016.repayment.3_yr_repayment.overall']
-        cursor.execute('''INSERT INTO SCHOOL (id, name, state, first_size, second_size, earnings, repayment)
-        VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, a_size, b_size, earnings, repayment))
+        cursor.execute('''INSERT INTO SCHOOL (id, name, state, size_2017, size_2018, earnings, repayment)
+        VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, size_2017, size_2018, earnings, repayment))
 
 # write_to_file() takes in data and a file in the form of a string in order to create a file to write the data to.
 
