@@ -73,7 +73,7 @@ def get_data(url: str):
 
 
 def setup_db(cursor: sqlite3.Cursor):
-    cursor.execute('''DROP TABLE school;''')
+    cursor.execute(''' DROP TABLE IF EXISTS school;''')
     cursor.execute('''CREATE TABLE if NOT EXISTS school(
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -99,6 +99,10 @@ def insert_data(unclean_data, cursor: sqlite3.Cursor):
         cursor.execute('''INSERT INTO SCHOOL (id, name, state, size_2017, size_2018, earnings, repayment)
         VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, size_2017, size_2018, earnings, repayment))
 
+
+def query_run(query: str, cursor: sqlite3.Cursor):
+    finished_query = cursor.execute(query)
+    return finished_query
 # write_to_file() takes in data and a file in the form of a string in order to create a file to write the data to.
 
 
