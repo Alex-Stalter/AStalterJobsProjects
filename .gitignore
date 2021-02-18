@@ -1,2 +1,3 @@
 /secrets.py
 /venv/
+/tests/test_db.sqlite
