@@ -1,9 +1,13 @@
 import jobs
+# makes sure there are over 1000 entries of data being accessed.
 
 
 def test_get_data():
     data = jobs.get_data(jobs.format_url())
     assert len(data) > 1000
+# test_db_creation90 creates an empty database and inserts a test entry
+# the test then uses query_run() to get a query which should return the data entered and then tests it
+# against the test_data list.
 
 
 def test_db_creation():

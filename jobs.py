@@ -98,6 +98,8 @@ def insert_data(unclean_data, cursor: sqlite3.Cursor):
         repayment = x['2016.repayment.3_yr_repayment.overall']
         cursor.execute('''INSERT INTO SCHOOL (id, name, state, size_2017, size_2018, earnings, repayment)
         VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, size_2017, size_2018, earnings, repayment))
+# query_run makes running queries easier so that a cursor and string can be provided
+# and the results will be returned instead of rewriting execute statements everywhere.
 
 
 def query_run(query: str, cursor: sqlite3.Cursor):
