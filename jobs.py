@@ -41,11 +41,33 @@ def format_url():
     url += "&sort=" + sort
 
     return url
+# Drops the table school so that no conflicts are created and a clean table can be worked in.
+# Once table has been dropped teh school table is created and all the columns created.
+
+
+def setup_db(cursor: sqlite3.Cursor):
+    cursor.execute(''' DROP TABLE IF EXISTS school;''')
+    cursor.execute('''DROP TABLE if EXISTS jobs''')
+    cursor.execute('''CREATE TABLE if NOT EXISTS school(
+    school_id INTEGER PRIMARY KEY,
+    name TEXT,
+    state TEXT,
+    size_2017 INTEGER,
+    size_2018 INTEGER,
+    earnings INTEGER,
+    repayment INTEGER);''')
+    cursor.execute('''CREATE TABLE if NOT EXISTS jobs(
+    job_id INTEGER PRIMARY KEY,
+    state TEXT,
+    occupation_code TEXT,
+    title TEXT,
+    employment INTEGER,
+    salary_25th_percentile INTEGER);''')
 
 
 def excel_import(excel_file: str):
     excel = openpyxl.load_workbook(filename=excel_file)
-    job_worksheet = excel['State_M2019_dl']
+    job_worksheet = excel.active
     occupation_groups = job_worksheet['J']
     rows_to_read = []
     jobs_dict = []
@@ -54,12 +76,12 @@ def excel_import(excel_file: str):
             rows_to_read.append(group.row)
 
     for row in rows_to_read:
-        jobs_dict.append({'state': job_worksheet['B' + str(row)].value, 'id': job_worksheet['H' + str(row)].value,
+        jobs_dict.append({'state': job_worksheet['B' + str(row)].value, 'code': job_worksheet['H' + str(row)].value,
                           'title': job_worksheet['I' + str(row)].value,
                           'employment': job_worksheet['K' + str(row)].value,
                           'salary': job_worksheet['Y' + str(row)].value})
-
-    print(jobs_dict)
+    print("excel_import() has finished...sending data...")
+    return jobs_dict
 
 
 # get_data takes the inputted URL and adds the api_key from secrets.py to the end of the url.
@@ -90,39 +112,17 @@ def get_data(url: str):
         results = json_data['results']
         all_data.extend(results)
         full_url = f"{url}&api_key={secrets.api_key}&page={x + 1}"
+    print("gat_data() has finished...sending data...")
     return all_data
     # write_to_file(all_data, "raw_results.txt")
     # write_to_file(clean_data(all_data), "clean_results.txt")
 
 
-# Drops the table school so that no conflicts are created and a clean table can be worked in.
-# Once table has been dropped teh school table is created and all the columns created.
-
-
-def setup_db(cursor: sqlite3.Cursor):
-    cursor.execute(''' DROP TABLE IF EXISTS school;''')
-    cursor.execute('''DROP TABLE if EXISTS jobs''')
-    cursor.execute('''CREATE TABLE if NOT EXISTS school(
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    state TEXT,
-    size_2017 INTEGER,
-    size_2018 INTEGER,
-    earnings INTEGER,
-    repayment INTEGER);''')
-    cursor.execute('''CREATE TABLE if NOT EXISTS jobs(
-    id TEXT PRIMARY KEY,
-    state TEXT,
-    title TEXT,
-    employment INTEGER,
-    percentile_salary_25th INTEGER);''')
-
-
 # clean_data() takes in the raw data taken from the results and formats it to be more readable.
 
 
-def insert_data(unclean_data,  table: str, cursor: sqlite3.Cursor):
-    for data_element in unclean_data:
+def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
+    for data_element in table_data:
         if table == "school":
             name = data_element['school.name']
             state = data_element['school.state']
@@ -131,12 +131,17 @@ def insert_data(unclean_data,  table: str, cursor: sqlite3.Cursor):
             size_2018 = data_element['2018.student.size']
             earnings = data_element['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
             repayment = data_element['2016.repayment.3_yr_repayment.overall']
-            cursor.execute('''INSERT INTO SCHOOL (id, name, state, size_2017, size_2018, earnings, repayment)
+            cursor.execute('''INSERT INTO SCHOOL (school_id, name, state, size_2017, size_2018, earnings, repayment)
             VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, size_2017, size_2018, earnings, repayment))
         elif table == "jobs":
-            pass
-
-
+            occupation_id = data_element['code']
+            state = data_element['state']
+            occupation_title = data_element['title']
+            employment = data_element['employment']
+            salary = data_element['salary']
+            cursor.execute('''INSERT INTO JOBS (job_id, state, occupation_code,title, employment, salary_25th_percentile)
+                        VALUES (?,?, ?, ?, ?, ?)''',
+                           (None, state, occupation_id, occupation_title, employment, salary))
 # query_run makes running queries easier so that a cursor and string can be provided
 # and the results will be returned instead of rewriting execute statements everywhere.
 
@@ -162,12 +167,14 @@ def query_run(query: str, cursor: sqlite3.Cursor):
 
 
 def main():
-    excel_import("state_job_data.xlsx")
-    """all_data = get_data(format_url())
+
+    school_data = get_data(format_url())
+    jobs_data = excel_import("state_job_data.xlsx")
     conn, cursor = open_db("jobs_db.sqlite")
     setup_db(cursor)
-    insert_data(all_data, "school", cursor)
-    close_db(conn)"""
+    insert_data(school_data, "school", cursor)
+    insert_data(jobs_data, "jobs", cursor)
+    close_db(conn)
 
 
 if __name__ == '__main__':
