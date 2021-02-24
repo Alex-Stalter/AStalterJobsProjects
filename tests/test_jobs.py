@@ -53,4 +53,5 @@ def test_db_creation():
 
 
 def test_excel_import():
-    pass
+    jobs_data = jobs.excel_import("state_job_data.xlsx")
+    assert len(jobs_data) > 1000
