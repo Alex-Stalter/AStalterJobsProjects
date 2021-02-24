@@ -23,7 +23,7 @@ def test_db_creation():
                   '2016.repayment.3_yr_repayment.overall': 1}]
     conn, cursor = jobs.open_db("test_db.sqlite")
     jobs.setup_db(cursor)
-    jobs.insert_data(test_data, cursor)
+    jobs.insert_data(test_data, "school", cursor)
     jobs.close_db(conn)
     conn, cursor = jobs.open_db("test_db.sqlite")
     test_query = jobs.query_run("SELECT * FROM" + " SCHOOL;", cursor)
