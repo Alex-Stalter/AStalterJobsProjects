@@ -1,5 +1,5 @@
 import jobs
-# import openpyxl
+import openpyxl
 
 # makes sure there are over 1000 entries of data being accessed.
 
@@ -52,7 +52,7 @@ def test_db_creation():
     jobs.close_db(conn)
 
 
-def test_excel_import():
+def test_excel_import_jobs():
     jobs_data = jobs.excel_import("state_job_data.xlsx")
     assert len(jobs_data) > 1000
     conn, cursor = jobs.open_db("excel_import_test.sqlite")
@@ -63,3 +63,29 @@ def test_excel_import():
     state_query = jobs.query_run("SELECT count(DISTINCT state) from" + " jobs;", cursor)
     for element in state_query:
         assert element[0] > 50
+
+
+def test_specific_excel_data():
+    excel_test_data = ["massachusetts", "00-0001", "test", "major", 5, 5]
+    excel_book = openpyxl.load_workbook(filename="test_workbook.xlsx")
+    test_sheet = excel_book.active
+    test_sheet['B2'] = excel_test_data[0]
+    test_sheet['H2'] = excel_test_data[1]
+    test_sheet['I2'] = excel_test_data[2]
+    test_sheet['J2'] = excel_test_data[3]
+    test_sheet['K2'] = excel_test_data[4]
+    test_sheet['Y2'] = excel_test_data[5]
+    excel_book.save(filename="test_workbook.xlsx")
+    test_dict = jobs.excel_import("test_workbook.xlsx")
+    conn, cursor = jobs.open_db("test_specific_excel_data.sqlite")
+    jobs.setup_db(cursor)
+    jobs.insert_data(test_dict, "jobs", cursor)
+    jobs.close_db(conn)
+    conn, cursor = jobs.open_db("test_specific_excel_data.sqlite")
+    specific_data_query = jobs.query_run("SELECT * FROM "+"JOBS;", cursor)
+    for element in specific_data_query:
+        assert element[1] == excel_test_data[0]
+        assert element[2] == excel_test_data[1]
+        assert element[3] == excel_test_data[2]
+        assert element[4] == excel_test_data[4]
+        assert element[5] == excel_test_data[5]
