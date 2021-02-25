@@ -1,6 +1,7 @@
 import jobs
 import openpyxl
 
+
 # makes sure there are over 1000 entries of data being accessed.
 
 
@@ -23,6 +24,7 @@ def test_db_creation():
          'id': 2, '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line': 1,
          '2016.repayment.3_yr_repayment.overall': 1}]
     job_test_data = [{'state': 'Massachusetts', 'code': '00-0001', 'title': 'testttl', 'employment': 5, 'salary': 1000}]
+    expected_tables = ['school', 'jobs']
 
     conn, cursor = jobs.open_db("test_db.sqlite")
     jobs.setup_db(cursor)
@@ -31,6 +33,10 @@ def test_db_creation():
     jobs.close_db(conn)
     conn, cursor = jobs.open_db("test_db.sqlite")
 
+    tables_query = jobs.query_run("SELECT name FROM " + "sqlite_master WHERE type='table' and name NOT LIKE 'sqlite_%';"
+                                                        "", cursor)
+    for (table, returned_tables) in zip(expected_tables, tables_query):
+        assert table == returned_tables[0]
     school_query = jobs.query_run("SELECT * FROM" + " SCHOOL;", cursor)
     for (row, element) in zip(school_query, school_test_data):
         assert row[0] == element['id']
@@ -82,7 +88,7 @@ def test_specific_excel_data():
     jobs.insert_data(test_dict, "jobs", cursor)
     jobs.close_db(conn)
     conn, cursor = jobs.open_db("test_specific_excel_data.sqlite")
-    specific_data_query = jobs.query_run("SELECT * FROM "+"JOBS;", cursor)
+    specific_data_query = jobs.query_run("SELECT * FROM " + "JOBS;", cursor)
     for element in specific_data_query:
         assert element[1] == excel_test_data[0]
         assert element[2] == excel_test_data[1]

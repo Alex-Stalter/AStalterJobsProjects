@@ -112,7 +112,7 @@ def get_data(url: str):
         results = json_data['results']
         all_data.extend(results)
         full_url = f"{url}&api_key={secrets.api_key}&page={x + 1}"
-    print("gat_data() has finished...sending data...")
+    print("get_data() has finished...sending data...")
     return all_data
     # write_to_file(all_data, "raw_results.txt")
     # write_to_file(clean_data(all_data), "clean_results.txt")
