@@ -55,3 +55,11 @@ def test_db_creation():
 def test_excel_import():
     jobs_data = jobs.excel_import("state_job_data.xlsx")
     assert len(jobs_data) > 1000
+    conn, cursor = jobs.open_db("excel_import_test.sqlite")
+    jobs.setup_db(cursor)
+    jobs.insert_data(jobs_data, "jobs", cursor)
+    jobs.close_db(conn)
+    conn, cursor = jobs.open_db("excel_import_test.sqlite")
+    state_query = jobs.query_run("SELECT count(DISTINCT state) from" + " jobs;", cursor)
+    for element in state_query:
+        assert element[0] > 50
