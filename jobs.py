@@ -136,7 +136,7 @@ def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
             earnings = data_element['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
             repayment_overall = data_element['2016.repayment.3_yr_repayment.overall']
             repayment_cohort = data_element['2016.repayment.repayment_cohort.3_year_declining_balance']
-            cursor.execute('''INSERT INTO SCHOOL (school_id, name, state, size_2017, size_2018, earnings, 
+            cursor.execute('''INSERT INTO SCHOOL (school_id, name, state, size_2017, size_2018, earnings,
             repayment_overall, repayment_cohort) VALUES (?, ?, ?, ?, ?, ?, ?,?)''',
                            (school_id, name, state, size_2017, size_2018, earnings,
                             repayment_overall, repayment_cohort))
