@@ -6,7 +6,7 @@ import secrets
 import sqlite3
 import openpyxl
 from typing import Tuple
-import jobsWindow
+# import jobsWindow
 import PySide6.QtWidgets
 import sys
 

@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QListWidget, QApplication, QListWidgetItem
-from typing import List, Dict
+from PySide6.QtWidgets import QWidget, QPushButton, QApplication
+# from typing import List, Dict
 
 
 class JobsWindow(QWidget):
