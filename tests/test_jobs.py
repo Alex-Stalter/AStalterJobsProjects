@@ -19,10 +19,10 @@ def test_db_creation():
     school_test_data = [
         {'school.name': 'Test School', '2017.student.size': 5, '2018.student.size': 1, 'school.state': 'NJ',
          'id': 1, '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line': 1,
-         '2016.repayment.3_yr_repayment.overall': 1},
+         '2016.repayment.3_yr_repayment.overall': 1, '2016.repayment.repayment_cohort.3_year_declining_balance': 0.5},
         {'school.name': 'Test School 1', '2017.student.size': 4, '2018.student.size': 6, 'school.state': 'MA',
          'id': 2, '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line': 1,
-         '2016.repayment.3_yr_repayment.overall': 1}]
+         '2016.repayment.3_yr_repayment.overall': 1, '2016.repayment.repayment_cohort.3_year_declining_balance': 0.5}]
     job_test_data = [{'state': 'Massachusetts', 'code': '00-0001', 'title': 'testttl', 'employment': 5, 'salary': 1000}]
     expected_tables = ['school', 'jobs']
 
@@ -46,6 +46,7 @@ def test_db_creation():
         assert row[4] == element['2018.student.size']
         assert row[5] == element['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
         assert row[6] == element['2016.repayment.3_yr_repayment.overall']
+        assert row[7] == element['2016.repayment.repayment_cohort.3_year_declining_balance']
     jobs_query = jobs.query_run("SELECT * FROM" + " JOBS;", cursor)
     for (row, element) in zip(jobs_query, job_test_data):
         assert row[0] == 1

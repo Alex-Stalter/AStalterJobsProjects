@@ -6,6 +6,9 @@ import secrets
 import sqlite3
 import openpyxl
 from typing import Tuple
+import jobsWindow
+import PySide6.QtWidgets
+import sys
 
 
 # open_db() creates a database based on the name that is inputted and then returns the cursor and connection so that
@@ -32,7 +35,7 @@ def close_db(connection: sqlite3.Connection):
 def format_url():
     query = ["school.name", "school.state", "2018.student.size", "2017.student.size",
              "2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line",
-             "2016.repayment.3_yr_repayment.overall"]
+             "2016.repayment.3_yr_repayment.overall", "2016.repayment.repayment_cohort.3_year_declining_balance"]
     sort = query[4]
     degree_type = "school.degrees_awarded.predominant=2,3"
     url = "https://api.data.gov/ed/collegescorecard/v1/schools.json?" + degree_type + "&fields=id"
@@ -55,7 +58,8 @@ def setup_db(cursor: sqlite3.Cursor):
     size_2017 INTEGER,
     size_2018 INTEGER,
     earnings INTEGER,
-    repayment INTEGER);''')
+    repayment_overall INTEGER,
+    repayment_cohort FLOAT);''')
     cursor.execute('''CREATE TABLE if NOT EXISTS jobs(
     job_id INTEGER PRIMARY KEY,
     state TEXT,
@@ -130,9 +134,12 @@ def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
             size_2017 = data_element['2017.student.size']
             size_2018 = data_element['2018.student.size']
             earnings = data_element['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line']
-            repayment = data_element['2016.repayment.3_yr_repayment.overall']
-            cursor.execute('''INSERT INTO SCHOOL (school_id, name, state, size_2017, size_2018, earnings, repayment)
-            VALUES (?, ?, ?, ?, ?, ?, ?)''', (school_id, name, state, size_2017, size_2018, earnings, repayment))
+            repayment_overall = data_element['2016.repayment.3_yr_repayment.overall']
+            repayment_cohort = data_element['2016.repayment.repayment_cohort.3_year_declining_balance']
+            cursor.execute('''INSERT INTO SCHOOL (school_id, name, state, size_2017, size_2018, earnings, 
+            repayment_overall, repayment_cohort) VALUES (?, ?, ?, ?, ?, ?, ?,?)''',
+                           (school_id, name, state, size_2017, size_2018, earnings,
+                            repayment_overall, repayment_cohort))
         elif table == "jobs":
             occupation_id = data_element['code']
             state = data_element['state']
@@ -151,19 +158,10 @@ def query_run(query: str, cursor: sqlite3.Cursor):
     return finished_query
 
 
-# write_to_file() takes in data and a file in the form of a string in order to create a file to write the data to.
-
-
-# def write_to_file(data, file: str):
-
-# if os.path.exists(file):
-#   os.remove(file)
-# results_file = open(file, 'x')
-# for x in data:
-#   results_file.write(str(x))
-#   results_file.write("\n")
-#   results_file.close()
-# main() starts the program.
+def launch_window():
+    qt_app = PySide6.QtWidgets.QApplication(sys.argv)
+    # my_window = jobsWindow.JobsWindow()
+    sys.exit(qt_app.exec_())
 
 
 def main():
@@ -175,6 +173,7 @@ def main():
     insert_data(school_data, "school", cursor)
     insert_data(jobs_data, "jobs", cursor)
     close_db(conn)
+    # launch_window()
 
 
 if __name__ == '__main__':
