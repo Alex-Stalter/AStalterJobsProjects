@@ -6,7 +6,9 @@ import secrets
 import sqlite3
 import openpyxl
 from typing import Tuple
-# import jobsWindow
+import jobsWindow
+import sys
+import PySide6.QtWidgets
 
 
 # open_db() creates a database based on the name that is inputted and then returns the cursor and connection so that
@@ -156,6 +158,12 @@ def query_run(query: str, cursor: sqlite3.Cursor):
     return finished_query
 
 
+def create_window(data):
+    qt_app = PySide6.QtWidgets.QApplication(sys.argv)
+    my_window = jobsWindow.JobsWindow(data)
+    sys.exit(qt_app.exec_())
+
+
 def main():
 
     school_data = get_data(format_url())
@@ -165,6 +173,7 @@ def main():
     insert_data(school_data, "school", cursor)
     insert_data(jobs_data, "jobs", cursor)
     close_db(conn)
+    create_window(jobs_data)
 
 
 if __name__ == '__main__':
