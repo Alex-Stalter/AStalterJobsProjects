@@ -31,6 +31,7 @@ jobs:
         pip install flake8 pytest
         sudo apt update
         sudo apt install libgl1-mesa-glx
+        sudo apt install libopengl0 -y
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
