@@ -161,6 +161,7 @@ def query_run(query: str, cursor: sqlite3.Cursor):
 def create_window(data):
     qt_app = PySide6.QtWidgets.QApplication(sys.argv)
     my_window = jobsWindow.JobsWindow(data)
+    my_window.repaint()
     sys.exit(qt_app.exec_())
 
 
