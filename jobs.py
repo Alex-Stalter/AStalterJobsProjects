@@ -8,7 +8,7 @@ import openpyxl
 from typing import Tuple
 import jobsWindow
 import sys
-import PySide6.QtWidgets
+# import PySide6.QtWidgets
 
 
 # open_db() creates a database based on the name that is inputted and then returns the cursor and connection so that
@@ -159,7 +159,7 @@ def query_run(query: str, cursor: sqlite3.Cursor):
 
 
 def create_window(data):
-    qt_app = PySide6.QtWidgets.QApplication(sys.argv)
+    qt_app = jobsWindow.QApplication(sys.argv)
     my_window = jobsWindow.JobsWindow(data)
     my_window.repaint()
     sys.exit(qt_app.exec_())
