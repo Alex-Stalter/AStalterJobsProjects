@@ -158,9 +158,9 @@ def query_run(query: str, cursor: sqlite3.Cursor):
     return finished_query
 
 
-def create_window(data):
+def create_window():
     qt_app = jobsWindow.QApplication(sys.argv)
-    my_window = jobsWindow.JobsWindow(data)
+    my_window = jobsWindow.JobsWindow()
     my_window.repaint()
     sys.exit(qt_app.exec_())
 
@@ -174,7 +174,7 @@ def main():
     insert_data(school_data, "school", cursor)
     insert_data(jobs_data, "jobs", cursor)
     close_db(conn)
-    create_window(jobs_data)
+    create_window()
 
 
 if __name__ == '__main__':

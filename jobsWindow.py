@@ -1,37 +1,42 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QListWidget, QApplication, QListWidgetItem, QLabel, QComboBox
+from PySide6.QtWidgets import *
 from typing import List, Dict
+import plotly.graph_objects as maps_plotly
 # import jobs
 
 
 class JobsWindow(QWidget):
-    def __init__(self, data_to_show):
+    def __init__(self):
         super().__init__()
-        self.table_selection = QComboBox(self)
-        self.combo_label = QLabel("Hello", self)
-        self.data = data_to_show
+        self.quit_button = QPushButton("Quit", self)
+        self.update_button = QPushButton("Update Data", self)
+        self.data_button = QPushButton("Run Data Visualization", self)
+        self.back_button = QPushButton("Back", self)
+        self.data_visualization_label = QLabel("Welcome to data visualization!", self)
+        self.welcome_label = QLabel("Welcome to Jobs Data Visualization", self)
+        self.us_map = maps_plotly.Figure(maps_plotly.Scattergeo())
         self.list_control = None
         self.setup_window()
 
     def setup_window(self):
         self.setWindowTitle("Jobs Window")
-        display_list = QListWidget(self)
-        self.list_control = display_list
-        self.put_data_in_list(self.data)
-        display_list.resize(700, 350)
-        self.setGeometry(100, 100, 700, 500)
-        quit_button = QPushButton("Quit", self)
-        quit_button.clicked.connect(QApplication.instance().quit)
-        quit_button.resize(quit_button.sizeHint())
-        quit_button.move(615, 450)
-        update_button = QPushButton("Update", self)
-        update_button.clicked.connect(self.update_data)
-        update_button.move(50, 450)
-        self.combo_label.move(350, 450)
-        self.combo_label.hide()
-        self.table_selection.addItem("---")
-        self.table_selection.addItem("School Table")
-        self.table_selection.addItem("Jobs Table")
-        self.table_selection.move(50, 400)
+        self.setGeometry(50, 50, 500, 500)
+        self.quit_button.clicked.connect(QApplication.instance().quit)
+        self.quit_button.resize(self.quit_button.sizeHint())
+        self.quit_button.move(415, 450)
+        self.update_button.clicked.connect(self.update_data)
+        self.update_button.move(200, 200)
+        self.data_button.clicked.connect(self.run_data_visualization)
+        self.data_button.move(175, 250)
+        self.back_button.clicked.connect(self.go_back)
+        self.back_button.move(25, 450)
+        self.back_button.hide()
+        self.data_visualization_label.hide()
+        self.welcome_label.move(150, 150)
+        self.us_map.update_geos(visible=False, resolution=110, scope="usa",
+                                showcountries=True, countrycolor="Black",
+                                showsubunits=True, subunitcolor="Grey")
+        self.us_map.update_layout()
+
         self.show()
 
     def put_data_in_list(self, data: List[Dict]):
@@ -40,5 +45,28 @@ class JobsWindow(QWidget):
             QListWidgetItem(display_text, listview=self.list_control)
 
     def update_data(self):
-        table_to_update = self.table_selection.itemText(self.table_selection.currentIndex())
-        table_to_update += "ok"
+        self.update_button.hide()
+        self.data_button.hide()
+        self.back_button.show()
+        self.welcome_label.hide()
+
+    def run_data_visualization(self):
+        self.update_button.hide()
+        self.data_button.hide()
+        self.data_visualization_label.show()
+        self.back_button.show()
+        self.setGeometry(50, 50, 800, 800)
+        self.back_button.move(25, 750)
+        self.quit_button.move(715, 750)
+        self.welcome_label.hide()
+        self.us_map.show()
+
+    def go_back(self):
+        self.back_button.hide()
+        self.update_button.show()
+        self.data_button.show()
+        self.data_visualization_label.hide()
+        self.setGeometry(100, 100, 500, 500)
+        self.back_button.move(25, 450)
+        self.quit_button.move(415, 450)
+        self.welcome_label.show()
