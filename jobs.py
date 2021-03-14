@@ -94,16 +94,53 @@ def excel_jobs_import(excel_file: str):
     return excel_dict
 
 
-def update_data(excel_file: str, table_to_update: str, cursor: sqlite3.Cursor):
+def update_data_from_list(data, table_name):
+    conn, cursor = open_db("jobs_db.sqlite")
+    if table_name == "Schools":
+        if data[0] == "None":
+            data_dict = [{'id': data[0], 'school.name': data[1],
+                          'school.state': data[2],
+                          '2017.student.size': data[3],
+                          '2018.student.size': data[4],
+                          '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line':
+                              data[5],
+                          '2016.repayment.3_yr_repayment.overall': data[6],
+                          '2016.repayment.repayment_cohort.3_year_declining_balance': data[7]}]
+            insert_data(data_dict, "school", cursor)
+        else:
+            cursor.execute('''UPDATE jobs SET school_id = ?, name = ?,state_abrev = ?,size_2017 = ?, size_2018 = ?,
+                            earnings = ?, repayment_overall = ?, repayment_cohort = ? 
+                            WHERE school_id = ?;''', (data[0], data[1], data[2], data[3], data[4], data[5],
+                                                      data[6], data[7]))
+    if table_name == "Jobs":
+        if data[0] == "None":
+            data_dict = [{'id': data[0],
+                          'state': data[1],
+                          'code': data[2],
+                          'title': data[3],
+                          'employment': data[4],
+                          'salary': data[5]}]
+            insert_data(data_dict, "jobs", cursor)
+        else:
+            cursor.execute('''UPDATE jobs SET state_name = ?,occupation_code = ?,title = ?,employment = ?,
+                            salary_25th_percentile = ? WHERE job_id = ?;''',
+                           (data[0], data[1], data[2], data[3], data[4], data[5]))
+    close_db(conn)
+
+
+def update_data_from_excel(excel_file: str, table_to_update: str):
+    conn, cursor = open_db("jobs_db.sqlite")
     added_data = openpyxl.load_workbook(filename=excel_file)
     working_sheet = added_data.active
     data_to_update = []
     if table_to_update == "Jobs":
         for data in working_sheet['A']:
-            data_to_update.append({'id': working_sheet['A'+str(data.row)].value, 'state': working_sheet['B'+str(data.row)].value,
-                                   'code': working_sheet['C'+str(data.row)].value, 'title': working_sheet['D'+str(data.row)].value,
-                                   'employment': working_sheet['E'+str(data.row)].value,
-                                   'salary': working_sheet['F'+str(data.row)].value})
+            data_to_update.append({'id': working_sheet['A' + str(data.row)].value,
+                                   'state': working_sheet['B' + str(data.row)].value,
+                                   'code': working_sheet['C' + str(data.row)].value,
+                                   'title': working_sheet['D' + str(data.row)].value,
+                                   'employment': working_sheet['E' + str(data.row)].value,
+                                   'salary': working_sheet['F' + str(data.row)].value})
         for entries in data_to_update:
             if entries['id'] == "None":
                 insert_data(data_to_update, "jobs", cursor)
@@ -116,9 +153,11 @@ def update_data(excel_file: str, table_to_update: str, cursor: sqlite3.Cursor):
         for data in working_sheet['A']:
             data_to_update.append(
                 {'id': working_sheet['A' + data.row].value, 'school.name': working_sheet['B' + data.row].value,
-                 'school.state': working_sheet['C' + data.row].value, '2017.student.size': working_sheet['D' + data.row].value,
+                 'school.state': working_sheet['C' + data.row].value,
+                 '2017.student.size': working_sheet['D' + data.row].value,
                  '2018.student.size': working_sheet['E' + data.row].value,
-                 '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line': working_sheet['F' + data.row].value,
+                 '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line':
+                     working_sheet['F' + data.row].value,
                  '2016.repayment.3_yr_repayment.overall': working_sheet['F' + data.row].value,
                  '2016.repayment.repayment_cohort.3_year_declining_balance': working_sheet['F' + data.row].value})
         for entries in data_to_update:
@@ -129,9 +168,11 @@ def update_data(excel_file: str, table_to_update: str, cursor: sqlite3.Cursor):
                 earnings = ?, repayment_overall = ?, repayment_cohort = ? 
                 WHERE school_id = ?;''', (entries['id'], entries['school.name'], entries['school.state'],
                                           entries['2017.student.size'], entries['2018.student.size'],
-                                          entries['2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line'],
+                                          entries[
+                                                                             '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line'],
                                           entries['2016.repayment.3_yr_repayment.overall'],
                                           entries['2016.repayment.repayment_cohort.3_year_declining_balance']))
+    close_db(conn)
 
 
 # get_data takes the inputted URL and adds the api_key from secrets.py to the end of the url.
@@ -140,7 +181,6 @@ def update_data(excel_file: str, table_to_update: str, cursor: sqlite3.Cursor):
 
 
 def get_data(url: str):
-
     all_data = []
     full_url = f"{url}&api_key={secrets.api_key}"
     response = requests.get(full_url)
@@ -187,7 +227,8 @@ def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
             occupation_title = data_element['title']
             employment = data_element['employment']
             salary = data_element['salary']
-            cursor.execute('''INSERT INTO JOBS (job_id, state_name, occupation_code,title, employment, salary_25th_percentile)
+            cursor.execute('''INSERT INTO JOBS (job_id, state_name, occupation_code,title, 
+            employment, salary_25th_percentile)
                         VALUES (?,?, ?, ?, ?, ?)''',
                            (None, state, occupation_id, occupation_title, employment, salary))
 
@@ -209,13 +250,13 @@ def create_window():
 
 
 def main():
-    school_data = get_data(format_url())
-    jobs_data = excel_jobs_import("state_job_data.xlsx")
-    conn, cursor = open_db("jobs_db.sqlite")
-    setup_db(cursor)
-    insert_data(school_data, "school", cursor)
-    insert_data(jobs_data, "jobs", cursor)
-    close_db(conn)
+    #school_data = get_data(format_url())
+    #jobs_data = excel_jobs_import("state_job_data.xlsx")
+    # conn, cursor = open_db("jobs_db.sqlite")
+    #setup_db(cursor)
+    #insert_data(school_data, "school", cursor)
+    #insert_data(jobs_data, "jobs", cursor)
+    #close_db(conn)
 
     create_window()
 

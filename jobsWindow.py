@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QPushButton, QLabel, QApplication, QWidget, \
     QTableWidget, QAbstractItemView, QLineEdit, QComboBox
 # for later QTableWidgetItem
 import plotly.graph_objects as maps_plotly
-# import jobs
+import jobs
 
 
 class JobsWindow(QWidget):
@@ -25,12 +25,13 @@ class JobsWindow(QWidget):
         self.update_label_06 = QLabel("", self)
         self.update_label_07 = QLabel("", self)
         self.update_label_08 = QLabel("", self)
+        self.excel_label = QLabel("Excel Spreadsheet:", self)
         self.update_information = QLabel(
-            "In order for the update to work correctly please make sure that you follow these steps\n"
-            "1. Select which table in the database you would like to update info\n"
-            "2. Make sure you enter a excel spreadsheet for your data to be retrieved from\n"
-            "3. If you are adding a new netry make sure the id is None\n"
-            "4. Lastly make sure every entry field is filled with information.", self)
+            "If you would like to update a single entry please select the table and enter all of its information.\n"
+            "If you would like to import from a spreadsheet type it into the box on the right and select the table.\n"
+            "When you are ready with which ever function press Enter Data.\n"
+            "For any data you want to append make sure the id is None.\n"
+            "Also only work from one method at a time and make sure he other is empty.", self)
         self.text_data_visualization = QTableWidget(self)
         self.us_map = maps_plotly.Figure(maps_plotly.Scattergeo())
         self.table_selection = QComboBox(self)
@@ -82,6 +83,7 @@ class JobsWindow(QWidget):
         self.update_box_06.move(150, 180)
         self.update_box_07.move(150, 210)
         self.update_box_08.move(150, 240)
+        self.excel_label.move(340, 70)
         self.update_excel_selection.move(340, 90)
         self.update_information.move(25, 325)
         self.update_label_01.setGeometry(5, 30, 145, 20)
@@ -94,7 +96,7 @@ class JobsWindow(QWidget):
         self.update_label_08.setGeometry(5, 240, 145, 20)
         self.table_selection.setGeometry(10, 10, 145, 20)
         self.enter_data.move(10, 260)
-        self.enter_data.clicked.connect(self.update_selection)
+        self.enter_data.clicked.connect(self.import_data)
         self.table_selection.addItem("---")
         self.table_selection.addItem("Schools")
         self.table_selection.addItem("Jobs")
@@ -114,6 +116,7 @@ class JobsWindow(QWidget):
         self.table_selection.hide()
         self.enter_data.hide()
         self.update_excel_selection.hide()
+        self.excel_label.hide()
 
     def hide_update_boxes(self):
         self.update_box_01.hide()
@@ -142,6 +145,7 @@ class JobsWindow(QWidget):
         self.enter_data.show()
         self.update_information.show()
         self.update_excel_selection.show()
+        self.excel_label.show()
 
     def update_selection(self):
         self.hide_update_boxes()
@@ -175,6 +179,25 @@ class JobsWindow(QWidget):
             self.update_label_07.setText("repayment_overall")
             self.update_box_08.show()
             self.update_label_08.setText("repayment_cohort")
+
+    def import_data(self):
+        if self.update_excel_selection.text() == "":
+            if self.table_selection.currentText() == "Jobs":
+                information_to_update = [self.update_box_01.text(), self.update_box_02.text(),
+                                         self.update_box_03.text(), self.update_box_04.text(),
+                                         self.update_box_05.text(), self.update_box_06.text()]
+                jobs.update_data_from_list(information_to_update, "Jobs")
+            elif self.table_selection.currentText() == "Schools":
+                information_to_update = [self.update_box_01.text(), self.update_box_02.text(),
+                                         self.update_box_03.text(), self.update_box_04.text(),
+                                         self.update_box_05.text(), self.update_box_06.text(),
+                                         self.update_box_07.text(), self.update_box_08.text()]
+                jobs.update_data_from_list(information_to_update, "Schools")
+        else:
+            if self.table_selection.currentText() == "Jobs":
+                jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs")
+            elif self.table_selection.currentText() == "Schools":
+                jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs")
 
     def run_data_visualization(self):
         self.update_button.hide()
