@@ -140,7 +140,7 @@ def update_data(excel_file: str, table_to_update: str, cursor: sqlite3.Cursor):
 
 
 def get_data(url: str):
-    # TODO: general clean up to make code more readable.
+
     all_data = []
     full_url = f"{url}&api_key={secrets.api_key}"
     response = requests.get(full_url)
@@ -215,7 +215,6 @@ def main():
     setup_db(cursor)
     insert_data(school_data, "school", cursor)
     insert_data(jobs_data, "jobs", cursor)
-    update_data("test_data_for_update.xlsx", "Jobs", cursor)
     close_db(conn)
 
     create_window()
