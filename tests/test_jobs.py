@@ -60,7 +60,7 @@ def test_db_creation():
 
 
 def test_excel_import_jobs():
-    jobs_data = jobs.excel_import("state_job_data.xlsx")
+    jobs_data = jobs.excel_jobs_import("state_job_data.xlsx")
     assert len(jobs_data) > 1000
     conn, cursor = jobs.open_db("excel_import_test.sqlite")
     jobs.setup_db(cursor)
@@ -83,7 +83,7 @@ def test_specific_excel_data():
     test_sheet['K2'] = excel_test_data[4]
     test_sheet['Y2'] = excel_test_data[5]
     excel_book.save(filename="test_workbook.xlsx")
-    test_dict = jobs.excel_import("test_workbook.xlsx")
+    test_dict = jobs.excel_jobs_import("test_workbook.xlsx")
     conn, cursor = jobs.open_db("test_specific_excel_data.sqlite")
     jobs.setup_db(cursor)
     jobs.insert_data(test_dict, "jobs", cursor)

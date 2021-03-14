@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QPushButton, QLabel, QApplication, QListWidgetItem
     QTableWidgetItem, QTableWidget, QAbstractItemView, QLineEdit
 from typing import List, Dict
 import plotly.graph_objects as maps_plotly
-# import jobs
+import jobs
 
 
 class JobsWindow(QWidget):
