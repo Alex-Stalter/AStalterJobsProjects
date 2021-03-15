@@ -8,6 +8,7 @@ import openpyxl
 from typing import Tuple
 import jobsWindow
 import sys
+import states
 
 
 # import PySide6.QtWidgets
@@ -72,6 +73,13 @@ def setup_db(cursor: sqlite3.Cursor):
     title TEXT,
     employment INTEGER,
     salary_25th_percentile INTEGER);''')
+    cursor.execute('''CREATE TABLE "states" (
+    "state_id"	INTEGER,
+    "state_name"	TEXT,
+    "state_abrev"	TEXT,
+    FOREIGN KEY("state_name") REFERENCES "jobs"("state_name"),
+    PRIMARY KEY("state_id")
+    );''')
 
 
 def excel_jobs_import(excel_file: str):
@@ -231,6 +239,9 @@ def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
             employment, salary_25th_percentile)
                         VALUES (?,?, ?, ?, ?, ?)''',
                            (None, state, occupation_id, occupation_title, employment, salary))
+        elif table == "states":
+            cursor.execute('''INSERT INTO STATES (state_id, state_name, state_abrev) VALUES(?, ?, ?)''',
+                           (None, data_element['state_name'], data_element['state_abrev']))
 
 
 # query_run makes running queries easier so that a cursor and string can be provided
@@ -250,13 +261,14 @@ def create_window():
 
 
 def main():
-    #school_data = get_data(format_url())
-    #jobs_data = excel_jobs_import("state_job_data.xlsx")
-    # conn, cursor = open_db("jobs_db.sqlite")
-    #setup_db(cursor)
-    #insert_data(school_data, "school", cursor)
-    #insert_data(jobs_data, "jobs", cursor)
-    #close_db(conn)
+    school_data = get_data(format_url())
+    jobs_data = excel_jobs_import("state_job_data.xlsx")
+    conn, cursor = open_db("jobs_db.sqlite")
+    setup_db(cursor)
+    insert_data(school_data, "school", cursor)
+    insert_data(jobs_data, "jobs", cursor)
+    insert_data(states.state_list, "states", cursor)
+    close_db(conn)
 
     create_window()
 

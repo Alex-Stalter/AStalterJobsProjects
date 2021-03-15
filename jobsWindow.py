@@ -1,6 +1,7 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QLabel, QApplication, QWidget, \
-    QTableWidget, QAbstractItemView, QLineEdit, QComboBox
-# for later QTableWidgetItem
+    QListWidget, QListWidgetItem, QLineEdit, QComboBox
+import sqlite3
 import plotly.graph_objects as maps_plotly
 import jobs
 
@@ -17,6 +18,7 @@ class JobsWindow(QWidget):
         self.map_visualization = QPushButton("Map Visualization", self)
         self.data_visualization_label = QLabel("Welcome to data visualization!", self)
         self.welcome_label = QLabel("Welcome to Jobs data Visualization.", self)
+        self.list_control = None
         self.update_label_01 = QLabel("", self)
         self.update_label_02 = QLabel("", self)
         self.update_label_03 = QLabel("", self)
@@ -32,7 +34,6 @@ class JobsWindow(QWidget):
             "When you are ready with which ever function press Enter Data.\n"
             "For any data you want to append make sure the id is None.\n"
             "Also only work from one method at a time and make sure he other is empty.", self)
-        self.text_data_visualization = QTableWidget(self)
         self.us_map = maps_plotly.Figure(maps_plotly.Scattergeo())
         self.table_selection = QComboBox(self)
         self.update_box_01 = QLineEdit(self)
@@ -49,6 +50,9 @@ class JobsWindow(QWidget):
 
     def setup_window(self):
         self.setWindowTitle("Jobs Window")
+        display_list = QListWidget(self)
+        self.list_control = display_list
+        display_list.resize(400, 350)
         self.setGeometry(50, 50, 500, 500)
         self.quit_button.clicked.connect(QApplication.instance().quit)
         self.quit_button.resize(self.quit_button.sizeHint())
@@ -60,7 +64,7 @@ class JobsWindow(QWidget):
         self.back_button.clicked.connect(self.go_back)
         self.back_button.move(25, 450)
         self.data_visualization_label.move(20, 400)
-        self.text_visualization_button.move(400 - self.text_data_visualization.width(), 750)
+        self.text_visualization_button.move(400 - self.text_visualization_button.width(), 750)
         self.text_visualization_button.clicked.connect(self.text_visualization)
         self.map_visualization.move(self.text_visualization_button.x() + self.text_visualization_button.width(),
                                     self.text_visualization_button.y())
@@ -70,11 +74,6 @@ class JobsWindow(QWidget):
                                 showcountries=True, countrycolor="Black",
                                 showsubunits=True, subunitcolor="Grey")
         self.us_map.update_layout()
-        self.text_data_visualization.setRowCount(5)
-        self.text_data_visualization.setColumnCount(5)
-        self.text_data_visualization.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.text_data_visualization.resize(self.text_data_visualization.size().width() *
-                                            self.text_data_visualization.columnCount() + 25, 300)
         self.update_box_01.move(150, 30)
         self.update_box_02.move(150, 60)
         self.update_box_03.move(150, 90)
@@ -107,8 +106,8 @@ class JobsWindow(QWidget):
 
     def hidden_at_start(self):
         self.hide_update_boxes()
+        self.list_control.hide()
         self.update_information.hide()
-        self.text_data_visualization.hide()
         self.map_visualization.hide()
         self.text_visualization_button.hide()
         self.data_visualization_label.hide()
@@ -223,8 +222,25 @@ class JobsWindow(QWidget):
         self.hidden_at_start()
 
     def text_visualization(self):
-        self.text_data_visualization.show()
+        conn, cursor = jobs.open_db("jobs_db.sqlite")
+        data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, '''+'''
+        total(jobs.employment) as employment,
+        round(avg(school.repayment_cohort),3) as repayment_cohort, 
+        round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
+        FROM school
+        JOIN states using(state_abrev)
+        JOIN jobs using(state_name)
+        GROUP BY state_name
+        ;''', cursor)
+        QListWidgetItem("State", listview=self.list_control)
+        for state in data_visualization_per_state:
+
+            employment_colored = f"{state[2]}"
+            display_data = f"{state[0]}, {state[1]}"
+            QListWidgetItem(display_data, listview=self.list_control).setForeground(Qt.red)
+        self.list_control.show()
+        jobs.close_db(conn)
 
     def run_map_visualization(self):
-        self.text_data_visualization.hide()
+
         self.us_map.show()
