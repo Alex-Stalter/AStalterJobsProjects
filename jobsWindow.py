@@ -1,7 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QLabel, QApplication, QWidget, \
     QListWidget, QListWidgetItem, QLineEdit, QComboBox
-import sqlite3
 import plotly.graph_objects as maps_plotly
 import jobs
 
@@ -225,6 +224,7 @@ class JobsWindow(QWidget):
         conn, cursor = jobs.open_db("jobs_db.sqlite")
         data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, '''+'''
         total(jobs.employment) as employment,
+        total(school.size_2018/4),
         round(avg(school.repayment_cohort),3) as repayment_cohort, 
         round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
         FROM school
@@ -234,10 +234,8 @@ class JobsWindow(QWidget):
         ;''', cursor)
         QListWidgetItem("State", listview=self.list_control)
         for state in data_visualization_per_state:
-
-            employment_colored = f"{state[2]}"
-            display_data = f"{state[0]}, {state[1]}"
-            QListWidgetItem(display_data, listview=self.list_control).setForeground(Qt.red)
+            display_data = f"{state[0]}, {state[1]}, {state[2]}, {state[3]}, {state[4]}, {state[5]}"
+            QListWidgetItem(display_data, listview=self.list_control)
         self.list_control.show()
         jobs.close_db(conn)
 
