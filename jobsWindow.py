@@ -1,7 +1,8 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QLabel, QApplication, QWidget, \
     QListWidget, QListWidgetItem, QLineEdit, QComboBox
-import plotly.graph_objects as maps_plotly
+# import pandas
+import plotly.graph_objects as px
 import jobs
 
 
@@ -15,6 +16,8 @@ class JobsWindow(QWidget):
         self.back_button = QPushButton("Back", self)
         self.text_visualization_button = QPushButton("Text Visualization", self)
         self.map_visualization = QPushButton("Map Visualization", self)
+        self.order_selector_text = QComboBox(self)
+        self.data_selector_map = QComboBox(self)
         self.data_visualization_label = QLabel("Welcome to data visualization!", self)
         self.welcome_label = QLabel("Welcome to Jobs data Visualization.", self)
         self.list_control = None
@@ -33,7 +36,6 @@ class JobsWindow(QWidget):
             "When you are ready with which ever function press Enter Data.\n"
             "For any data you want to append make sure the id is None.\n"
             "Also only work from one method at a time and make sure he other is empty.", self)
-        self.us_map = maps_plotly.Figure(maps_plotly.Scattergeo())
         self.table_selection = QComboBox(self)
         self.update_box_01 = QLineEdit(self)
         self.update_box_02 = QLineEdit(self)
@@ -51,7 +53,7 @@ class JobsWindow(QWidget):
         self.setWindowTitle("Jobs Window")
         display_list = QListWidget(self)
         self.list_control = display_list
-        display_list.resize(400, 350)
+        display_list.resize(500, 350)
         self.setGeometry(50, 50, 500, 500)
         self.quit_button.clicked.connect(QApplication.instance().quit)
         self.quit_button.resize(self.quit_button.sizeHint())
@@ -63,16 +65,16 @@ class JobsWindow(QWidget):
         self.back_button.clicked.connect(self.go_back)
         self.back_button.move(25, 450)
         self.data_visualization_label.move(20, 400)
-        self.text_visualization_button.move(400 - self.text_visualization_button.width(), 750)
+        self.text_visualization_button.move(400 - self.text_visualization_button.width(), 600)
+        self.order_selector_text.move(self.text_visualization_button.x(),
+                                      self.text_visualization_button.y()+self.text_visualization_button.height()+10)
         self.text_visualization_button.clicked.connect(self.text_visualization)
         self.map_visualization.move(self.text_visualization_button.x() + self.text_visualization_button.width(),
                                     self.text_visualization_button.y())
+        self.data_selector_map.move(self.map_visualization.x(),
+                                    self.map_visualization.y()+self.map_visualization.height()+10)
         self.map_visualization.clicked.connect(self.run_map_visualization)
         self.welcome_label.move(150, 150)
-        self.us_map.update_geos(visible=False, resolution=110, scope="usa",
-                                showcountries=True, countrycolor="Black",
-                                showsubunits=True, subunitcolor="Grey")
-        self.us_map.update_layout()
         self.update_box_01.move(150, 30)
         self.update_box_02.move(150, 60)
         self.update_box_03.move(150, 90)
@@ -98,6 +100,13 @@ class JobsWindow(QWidget):
         self.table_selection.addItem("---")
         self.table_selection.addItem("Schools")
         self.table_selection.addItem("Jobs")
+        self.order_selector_text.addItem("---")
+        self.order_selector_text.addItem("ASC")
+        self.order_selector_text.addItem("DESC")
+        self.data_selector_map.addItem("---")
+        self.data_selector_map.addItem("Graduates to Employment")
+        self.data_selector_map.addItem("Average Declining Balance Percent to Average Salar")
+        self.data_selector_map.addItem("Average Salary")
         self.table_selection.currentIndexChanged.connect(self.update_selection)
         self.hidden_at_start()
 
@@ -115,6 +124,8 @@ class JobsWindow(QWidget):
         self.enter_data.hide()
         self.update_excel_selection.hide()
         self.excel_label.hide()
+        self.data_selector_map.hide()
+        self.order_selector_text.hide()
 
     def hide_update_boxes(self):
         self.update_box_01.hide()
@@ -208,6 +219,8 @@ class JobsWindow(QWidget):
         self.welcome_label.hide()
         self.map_visualization.show()
         self.text_visualization_button.show()
+        self.data_selector_map.show()
+        self.order_selector_text.show()
 
     def go_back(self):
         self.back_button.hide()
@@ -221,24 +234,104 @@ class JobsWindow(QWidget):
         self.hidden_at_start()
 
     def text_visualization(self):
+        self.list_control.clear()
         conn, cursor = jobs.open_db("jobs_db.sqlite")
-        data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, '''+'''
-        total(jobs.employment) as employment,
-        total(school.size_2018/4),
-        round(avg(school.repayment_cohort),3) as repayment_cohort, 
-        round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
-        FROM school
-        JOIN states using(state_abrev)
-        JOIN jobs using(state_name)
-        GROUP BY state_name
-        ;''', cursor)
+        if self.order_selector_text.currentText() == "ASC":
+            data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
+            total(jobs.employment) as employment,
+            total(school.size_2018/4),
+            round(avg(school.repayment_cohort),3) as repayment_cohort, 
+            round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
+            FROM school
+            JOIN states using(state_abrev)
+            JOIN jobs using(state_name)
+            GROUP BY state_name
+            ORDER BY employment DESC;''', cursor)
+        elif self.order_selector_text.currentText() == "DESC":
+            data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
+                        total(jobs.employment) as employment,
+                        total(school.size_2018/4),
+                        round(avg(school.repayment_cohort),3) as repayment_cohort, 
+                        round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
+                        FROM school
+                        JOIN states using(state_abrev)
+                        JOIN jobs using(state_name)
+                        GROUP BY state_name
+                        ORDER BY employment;''', cursor)
+        else:
+            data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
+                                    total(jobs.employment) as employment,
+                                    total(school.size_2018/4),
+                                    round(avg(school.repayment_cohort),3) as repayment_cohort, 
+                                    round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
+                                    FROM school
+                                    JOIN states using(state_abrev)
+                                    JOIN jobs using(state_name)
+                                    GROUP BY state_name
+                                    ;''', cursor)
         QListWidgetItem("State", listview=self.list_control)
         for state in data_visualization_per_state:
-            display_data = f"{state[0]}, {state[1]}, {state[2]}, {state[3]}, {state[4]}, {state[5]}"
-            QListWidgetItem(display_data, listview=self.list_control)
+            state_display_data = f"{state[0]}, {state[1]}"
+            grad_employ_data = f"2019 graduates: {state[3]} to Total employment: {state[2]}"
+            repayment_data = f"Average Declining Balance Percent: {state[4]} to Entry Salary Average: {state[5]}"
+            state_item = QListWidgetItem(state_display_data, listview=self.list_control)
+            grad_item = QListWidgetItem(grad_employ_data, listview=self.list_control)
+            repayment_item = QListWidgetItem(repayment_data, listview=self.list_control)
+            grad_item.setForeground(Qt.darkGreen)
+            repayment_item.setForeground(Qt.blue)
+            state_item.setForeground(Qt.white)
+            state_item.setBackground(Qt.black)
         self.list_control.show()
         jobs.close_db(conn)
 
     def run_map_visualization(self):
+        conn, cursor = jobs.open_db("jobs_db.sqlite")
+        data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
+                total(jobs.employment) as employment,
+                total(school.size_2018/4),
+                round(avg(school.repayment_cohort),3) as repayment_cohort, 
+                round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
+                FROM school
+                JOIN states using(state_abrev)
+                JOIN jobs using(state_name)
+                GROUP BY state_name
+                ;''', cursor)
+        state_abrev = []
+        state_grads = []
+        state_repayment = []
+        state_employment = []
+        state_salary = []
 
-        self.us_map.show()
+        for state in data_visualization_per_state:
+            state_abrev.append(state[0])
+            state_grads.append(state[3]/state[2])
+            state_repayment.append(state[4])
+            state_employment.append(state[2])
+            state_salary.append(state[5])
+
+        if self.data_selector_map.currentText() == "Graduates to Employment":
+            us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_grads,
+                                                  locationmode='USA-states', colorbar_title="Graduates/Employment"
+                                                  ))
+            us_map.update_layout(geo_scope='usa', title_text='Graduates to Employment By State')
+            us_map.show()
+        elif self.data_selector_map.currentText() == "Average Declining Balance Percent":
+            us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_repayment,
+                                                  locationmode='USA-states', colorbar_title="Average Percent"
+                                                  ))
+            us_map.update_layout(geo_scope='usa', title_text='Average Percent of People with Declining Loans')
+            us_map.show()
+        elif self.data_selector_map.currentText() == "Average Salary":
+            us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_salary,
+                                                  locationmode='USA-states', colorbar_title="Salary"
+                                                  ))
+            us_map.update_layout(geo_scope='usa', title_text='Entry Level Salary by State')
+            us_map.show()
+        else:
+            us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_grads,
+                                                  locationmode='USA-states', colorbar_title="Graduates"
+                                                  ))
+            us_map.update_layout(geo_scope='usa', title_text='Graduates By State')
+            us_map.show()
+        jobs.close_db(conn)
+        self.list_control.hide()
