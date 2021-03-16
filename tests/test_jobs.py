@@ -73,7 +73,7 @@ def test_excel_import_jobs():
 
 
 def test_specific_excel_data():
-    excel_test_data = ["massachusetts", "00-0001", "test", "major", 5, 5]
+    excel_test_data = ["massachusetts", 0, "test", "major", 5, 5]
     excel_book = openpyxl.load_workbook(filename="test_workbook.xlsx")
     test_sheet = excel_book.active
     test_sheet['B2'] = excel_test_data[0]
