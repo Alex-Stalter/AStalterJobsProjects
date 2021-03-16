@@ -177,7 +177,7 @@ def update_data_from_excel(excel_file: str, table_to_update: str):
                 WHERE school_id = ?;''', (entries['id'], entries['school.name'], entries['school.state'],
                                           entries['2017.student.size'], entries['2018.student.size'],
                                           entries[
-                                                                             '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line'],
+                                                '2017.earnings.3_yrs_after_completion.overall_count_over_poverty_line'],
                                           entries['2016.repayment.3_yr_repayment.overall'],
                                           entries['2016.repayment.repayment_cohort.3_year_declining_balance']))
     close_db(conn)
@@ -235,7 +235,7 @@ def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
             occupation_title = data_element['title']
             employment = data_element['employment']
             salary = data_element['salary']
-            cursor.execute('''INSERT INTO JOBS (job_id, state_name, occupation_code,title, 
+            cursor.execute('''INSERT INTO JOBS (job_id, state_name, occupation_code,title,
             employment, salary_25th_percentile)
                         VALUES (?,?, ?, ?, ?, ?)''',
                            (None, state, occupation_id, occupation_title, employment, salary))
