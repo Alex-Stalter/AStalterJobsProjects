@@ -13,6 +13,7 @@ Please do the following.
 - Create a secrets.py in order to hide the api key. Do not hardcode into URL.
 
 ## What the code does.
+
 To start off a database is created called jobs_db where all the data will be put into. One table is currently created 
 called school and 7 columns are created to hold the data that is requested from the government data site.
 
@@ -32,6 +33,7 @@ The function that inserts the school data into the Database also handles the dat
 In addition to the above the following data is also displayed in a GUI that is displayed below.
 
 ### Tests
+
 Four tests are run to make sure each element of the program works flawlessly.
 
 The first test is a very simple test that looks at the data retrieved from online and makes sure that there are more
@@ -56,6 +58,7 @@ The following project requests over 3,000 entries of data so it will take some t
 a message once getting the school data and excel data has finished.
 
 ## Database Structure
+
 The database created in the code, which is named jobs_db.sqlite, is currently a two table database the first is school 
 which has with seven columns each corresponding to one of the seven values retrieved through the government data website
 . The primary key of the table is the school id which is a unique number that is pulled from the university data website
@@ -64,12 +67,16 @@ which has with seven columns each corresponding to one of the seven values retri
 table which allows the two previous tables to be linked together with a many ot many relationship.
 
 ##GUI
+
+
 The gui does two things firstly it allows the user to import extra data into the database and also replace current
 elements in the database using excel files. The second function allows the user to visualize the data in two ratios
 firstly the ration of graduates to toal employment nad secondly the ratio of Declining loan balance and average entry
 salary.
 
 ###Things to keep in mind while using the GUI.
+
+
 You can only edit information from one table at a time and also only by one way at a time either through excel
 or individual entries using the UI. In order for them to work the other must be empty. Also keep in mind
 the data in your excel sheet must be the same format as the data you would enter into the UI.
