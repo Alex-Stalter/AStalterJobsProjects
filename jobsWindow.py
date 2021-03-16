@@ -240,7 +240,7 @@ class JobsWindow(QWidget):
             data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
             total(jobs.employment) as employment,
             total(school.size_2018/4),
-            round(avg(school.repayment_cohort),3) as repayment_cohort, 
+            round(avg(school.repayment_cohort),3) as repayment_cohort,
             round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
             FROM school
             JOIN states using(state_abrev)
@@ -251,7 +251,7 @@ class JobsWindow(QWidget):
             data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
                         total(jobs.employment) as employment,
                         total(school.size_2018/4),
-                        round(avg(school.repayment_cohort),3) as repayment_cohort, 
+                        round(avg(school.repayment_cohort),3) as repayment_cohort,
                         round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
                         FROM school
                         JOIN states using(state_abrev)
@@ -262,7 +262,7 @@ class JobsWindow(QWidget):
             data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
                                     total(jobs.employment) as employment,
                                     total(school.size_2018/4),
-                                    round(avg(school.repayment_cohort),3) as repayment_cohort, 
+                                    round(avg(school.repayment_cohort),3) as repayment_cohort,
                                     round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
                                     FROM school
                                     JOIN states using(state_abrev)
@@ -289,7 +289,7 @@ class JobsWindow(QWidget):
         data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
                 total(jobs.employment) as employment,
                 total(school.size_2018/4),
-                round(avg(school.repayment_cohort),3) as repayment_cohort, 
+                round(avg(school.repayment_cohort),3) as repayment_cohort,
                 round(avg(jobs.salary_25th_percentile)) as averge_entry_salary
                 FROM school
                 JOIN states using(state_abrev)
