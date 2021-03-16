@@ -117,7 +117,7 @@ def update_data_from_list(data, table_name):
             insert_data(data_dict, "school", cursor)
         else:
             cursor.execute('''UPDATE jobs SET school_id = ?, name = ?,state_abrev = ?,size_2017 = ?, size_2018 = ?,
-                            earnings = ?, repayment_overall = ?, repayment_cohort = ? 
+                            earnings = ?, repayment_overall = ?, repayment_cohort = ?
                             WHERE school_id = ?;''', (data[0], data[1], data[2], data[3], data[4], data[5],
                                                       data[6], data[7]))
     if table_name == "Jobs":
@@ -173,7 +173,7 @@ def update_data_from_excel(excel_file: str, table_to_update: str):
                 insert_data(data_to_update, "school", cursor)
             else:
                 cursor.execute('''UPDATE jobs SET school_id = ?, name = ?,state_abrev = ?,size_2017 = ?, size_2018 = ?,
-                earnings = ?, repayment_overall = ?, repayment_cohort = ? 
+                earnings = ?, repayment_overall = ?, repayment_cohort = ?
                 WHERE school_id = ?;''', (entries['id'], entries['school.name'], entries['school.state'],
                                           entries['2017.student.size'], entries['2018.student.size'],
                                           entries[
@@ -241,7 +241,7 @@ def insert_data(table_data, table: str, cursor: sqlite3.Cursor):
                            (None, state, occupation_id, occupation_title, employment, salary))
         elif table == "states":
             cursor.execute('''INSERT INTO STATES (state_id, state_name, state_abrev) VALUES(?, ?, ?)''',
-                           (None, data_element['state_name'], data_element['state_abrev']))
+                            (None, data_element['state_name'], data_element['state_abrev']))
 
 
 # query_run makes running queries easier so that a cursor and string can be provided
