@@ -28,6 +28,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        apt-get update
+        apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
         pip install flake8 pytest wheel
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
