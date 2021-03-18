@@ -104,9 +104,8 @@ class JobsWindow(QWidget):
         self.order_selector_text.addItem("ASC")
         self.order_selector_text.addItem("DESC")
         self.data_selector_map.addItem("---")
-        self.data_selector_map.addItem("Graduates to Employment")
-        self.data_selector_map.addItem("Average Declining Balance Percent to Average Salar")
-        self.data_selector_map.addItem("Average Salary")
+        self.data_selector_map.addItem("Employment to Graduates")
+        self.data_selector_map.addItem("Average Salary to Average Declining Balance Percent")
         self.table_selection.currentIndexChanged.connect(self.update_selection)
         self.hidden_at_start()
 
@@ -272,8 +271,8 @@ class JobsWindow(QWidget):
         QListWidgetItem("State", listview=self.list_control)
         for state in data_visualization_per_state:
             state_display_data = f"{state[0]}, {state[1]}"
-            grad_employ_data = f"2019 graduates: {state[3]} to Total employment: {state[2]}"
-            repayment_data = f"Average Declining Balance Percent: {state[4]} to Entry Salary Average: {state[5]}"
+            grad_employ_data = f"Employment/Graduates: {state[2]/state[3]}"
+            repayment_data = f"Average Entry Salary/Average Declining Balance Percent: {state[5]/state[4]}"
             state_item = QListWidgetItem(state_display_data, listview=self.list_control)
             grad_item = QListWidgetItem(grad_employ_data, listview=self.list_control)
             repayment_item = QListWidgetItem(repayment_data, listview=self.list_control)
@@ -299,33 +298,24 @@ class JobsWindow(QWidget):
         state_abrev = []
         state_grads = []
         state_repayment = []
-        state_employment = []
-        state_salary = []
 
         for state in data_visualization_per_state:
             state_abrev.append(state[0])
-            state_grads.append(state[3]/state[2])
-            state_repayment.append(state[4])
-            state_employment.append(state[2])
-            state_salary.append(state[5])
+            state_grads.append(state[2]/state[3])
+            state_repayment.append(state[5]/state[4])
 
         if self.data_selector_map.currentText() == "Graduates to Employment":
             us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_grads,
-                                                  locationmode='USA-states', colorbar_title="Graduates/Employment"
+                                                  locationmode='USA-states', colorbar_title="Employment/Graduates"
                                                   ))
-            us_map.update_layout(geo_scope='usa', title_text='Graduates to Employment By State')
+            us_map.update_layout(geo_scope='usa', title_text='Employment VS Graduates By State')
             us_map.show()
         elif self.data_selector_map.currentText() == "Average Declining Balance Percent":
             us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_repayment,
-                                                  locationmode='USA-states', colorbar_title="Average Percent"
+                                                  locationmode='USA-states', colorbar_title="Salary/Average Percent"
                                                   ))
-            us_map.update_layout(geo_scope='usa', title_text='Average Percent of People with Declining Loans')
-            us_map.show()
-        elif self.data_selector_map.currentText() == "Average Salary":
-            us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_salary,
-                                                  locationmode='USA-states', colorbar_title="Salary"
-                                                  ))
-            us_map.update_layout(geo_scope='usa', title_text='Entry Level Salary by State')
+            us_map.update_layout(geo_scope='usa', title_text='Average Salary VS Average '
+                                                             'Percent of People with Declining Loans')
             us_map.show()
         else:
             us_map = px.Figure(data=px.Choropleth(locations=state_abrev, z=state_grads,
