@@ -102,8 +102,8 @@ def excel_jobs_import(excel_file: str):
     return excel_dict
 
 
-def update_data_from_list(data, table_name):
-    conn, cursor = open_db("jobs_db.sqlite")
+def update_data_from_list(data, table_name, data_base_name):
+    conn, cursor = open_db(data_base_name)
     if table_name == "Schools":
         if data[0] == "None":
             data_dict = [{'id': data[0], 'school.name': data[1],
@@ -132,7 +132,7 @@ def update_data_from_list(data, table_name):
         else:
             cursor.execute('''UPDATE jobs SET state_name = ?,occupation_code = ?,title = ?,employment = ?,
                             salary_25th_percentile = ? WHERE job_id = ?;''',
-                           (data[0], data[1], data[2], data[3], data[4], data[5]))
+                           (data[1], data[2], data[3], data[4], data[5], data[0]))
     close_db(conn)
 
 

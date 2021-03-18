@@ -195,13 +195,13 @@ class JobsWindow(QWidget):
                 information_to_update = [self.update_box_01.text(), self.update_box_02.text(),
                                          self.update_box_03.text(), self.update_box_04.text(),
                                          self.update_box_05.text(), self.update_box_06.text()]
-                jobs.update_data_from_list(information_to_update, "Jobs")
+                jobs.update_data_from_list(information_to_update, "Jobs", "jobs_db.sqlite")
             elif self.table_selection.currentText() == "Schools":
                 information_to_update = [self.update_box_01.text(), self.update_box_02.text(),
                                          self.update_box_03.text(), self.update_box_04.text(),
                                          self.update_box_05.text(), self.update_box_06.text(),
                                          self.update_box_07.text(), self.update_box_08.text()]
-                jobs.update_data_from_list(information_to_update, "Schools")
+                jobs.update_data_from_list(information_to_update, "Schools", "jobs_db.sqlite")
         else:
             if self.table_selection.currentText() == "Jobs":
                 jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs")

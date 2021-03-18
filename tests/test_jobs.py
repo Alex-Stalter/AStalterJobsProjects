@@ -96,3 +96,24 @@ def test_specific_excel_data():
         assert element[3] == excel_test_data[2]
         assert element[4] == excel_test_data[4]
         assert element[5] == excel_test_data[5]
+
+
+def test_update_from_list():
+    job_test_data = [{'state': 'Massachusetts', 'code': 99, 'title': 'testttl', 'employment': 5, 'salary': 1000}]
+    jobs_data_to_replace = [1, 'Rhode Island', 10, 'title', 10, 500]
+    conn, cursor = jobs.open_db("update_test.sqlite")
+    jobs.setup_db(cursor)
+    jobs.insert_data(job_test_data, "jobs", cursor)
+    jobs.close_db(conn)
+    jobs.update_data_from_list(jobs_data_to_replace, "Jobs", "update_test.sqlite")
+    conn, cursor = jobs.open_db("update_test.sqlite")
+    updated_data = jobs.query_run("SELECT *"+" FROM jobs;", cursor)
+    for element in updated_data:
+        assert jobs_data_to_replace[0] == element[0]
+        assert jobs_data_to_replace[1] == element[1]
+        assert jobs_data_to_replace[2] == element[2]
+        assert jobs_data_to_replace[3] == element[3]
+        assert jobs_data_to_replace[4] == element[4]
+        assert jobs_data_to_replace[5] == element[5]
+
+    jobs.close_db(conn)
