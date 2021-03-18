@@ -32,6 +32,18 @@ The function that inserts the school data into the Database also handles the dat
 
 In addition to the above the following data is also displayed in a GUI that is displayed below.
 
+The gui does two things firstly it allows the user to import extra data into the database and also replace current
+elements in the database using excel files. The second function allows the user to visualize the data in two ratios
+firstly the ration of graduates to toal employment nad secondly the ratio of Declining loan balance and average entry
+salary.
+
+You can only edit information from one table at a time and also only by one way at a time either through excel
+or individual entries using the UI. In order for them to work the other must be empty. Also keep in mind
+the data in your excel sheet must be the same format as the data you would enter into the UI.
+
+For the map visualization the text visualization just make sure to select how you would like to see the data or else it 
+will display a default data of ordering the text by state name alphabetically, and the graduates per state for the map.
+
 ### Tests
 
 Four tests are run to make sure each element of the program works flawlessly.
@@ -65,21 +77,3 @@ which has with seven columns each corresponding to one of the seven values retri
 . The second table is called Jobs and is filled with data from an Excel spreadsheet which a report of jobs from 2019
 . The Jobs table consists of six columns id, state, occupation code, title, employment, and salary. There is a third 
 table which allows the two previous tables to be linked together with a many ot many relationship.
-
-##GUI
-
-
-The gui does two things firstly it allows the user to import extra data into the database and also replace current
-elements in the database using excel files. The second function allows the user to visualize the data in two ratios
-firstly the ration of graduates to toal employment nad secondly the ratio of Declining loan balance and average entry
-salary.
-
-###Things to keep in mind while using the GUI.
-
-
-You can only edit information from one table at a time and also only by one way at a time either through excel
-or individual entries using the UI. In order for them to work the other must be empty. Also keep in mind
-the data in your excel sheet must be the same format as the data you would enter into the UI.
-
-For the map visualization the text visualization just make sure to select how you would like to see the data or else it 
-will display a default data of ordering the text by state name alphabetically, and the graduates per state for the map.
