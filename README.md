@@ -46,7 +46,7 @@ will display a default data of ordering the text by state name alphabetically, a
 
 ### Tests
 
-Four tests are run to make sure each element of the program works flawlessly.
+Six tests are run to make sure each element of the program works flawlessly.
 
 The first test is a very simple test that looks at the data retrieved from online and makes sure that there are more
 than 1000 entries that come in.
@@ -63,6 +63,12 @@ The fourth test creates sample data that is first input into a sample Excel file
 function where it returns the data as a dictionary and then that dictionary is passed into the function to put the data 
 into a sample database. A simple query is then run on the database and compared against the original list to make sure
 the data is not changed along the way and can be accessed correctly.
+
+THe fifth test creates a database and then updates it from a provided string. It first checks to make sure the data is 
+entered correctly into the databse then updates the data and makes sure the sample input is the same as the output from
+the database.
+
+The sixth test does a similar action to the fifth test but checks it by updating the data from an excel spreadsheet.
 
 ### Things to keep in mind while running.
 
