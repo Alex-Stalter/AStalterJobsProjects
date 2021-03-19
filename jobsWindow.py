@@ -203,9 +203,9 @@ class JobsWindow(QWidget):
                 jobs.update_data_from_list(information_to_update, "Schools", "jobs_db.sqlite")
         else:
             if self.table_selection.currentText() == "Jobs":
-                jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs")
+                jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs", "jobs_db.sqlite")
             elif self.table_selection.currentText() == "Schools":
-                jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs")
+                jobs.update_data_from_excel(self.update_excel_selection.text(), "Jobs", "jobs_db.sqlite")
 
     def run_data_visualization(self):
         self.update_button.hide()

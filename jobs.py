@@ -136,8 +136,8 @@ def update_data_from_list(data, table_name, data_base_name):
     close_db(conn)
 
 
-def update_data_from_excel(excel_file: str, table_to_update: str):
-    conn, cursor = open_db("jobs_db.sqlite")
+def update_data_from_excel(excel_file: str, table_to_update: str, data_base: str):
+    conn, cursor = open_db(data_base)
     added_data = openpyxl.load_workbook(filename=excel_file)
     working_sheet = added_data.active
     data_to_update = []
