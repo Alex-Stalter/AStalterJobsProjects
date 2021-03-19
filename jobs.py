@@ -260,14 +260,14 @@ def create_window():
 
 
 def main():
-    #school_data = get_data(format_url())
-    #jobs_data = excel_jobs_import("state_job_data.xlsx")
-    #conn, cursor = open_db("jobs_db.sqlite")
-    #setup_db(cursor)
-    #insert_data(school_data, "school", cursor)
-    #insert_data(jobs_data, "jobs", cursor)
-    #insert_data(states.state_list, "states", cursor)
-    #close_db(conn)
+    school_data = get_data(format_url())
+    jobs_data = excel_jobs_import("state_job_data.xlsx")
+    conn, cursor = open_db("jobs_db.sqlite")
+    setup_db(cursor)
+    insert_data(school_data, "school", cursor)
+    insert_data(jobs_data, "jobs", cursor)
+    insert_data(states.state_list, "states", cursor)
+    close_db(conn)
 
     create_window()
 
