@@ -245,7 +245,7 @@ class JobsWindow(QWidget):
             JOIN states using(state_abrev)
             JOIN jobs using(state_name)
             GROUP BY state_name
-            ORDER BY employment DESC;''', cursor)
+            ORDER BY employment ASC;''', cursor)
         elif self.order_selector_text.currentText() == "DESC":
             data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
                         total(jobs.employment) as employment,
@@ -256,7 +256,7 @@ class JobsWindow(QWidget):
                         JOIN states using(state_abrev)
                         JOIN jobs using(state_name)
                         GROUP BY state_name
-                        ORDER BY employment;''', cursor)
+                        ORDER BY employment DESC;''', cursor)
         else:
             data_visualization_per_state = jobs.query_run('''SELECT state_abrev, state_name, ''' + '''
                                     total(jobs.employment) as employment,
